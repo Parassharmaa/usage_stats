@@ -29,4 +29,12 @@ class UsageStats {
     var events = await _channel.invokeMethod('queryEvents', interval);
     return events;
   }
+
+  static queryConfiguration(DateTime startDate, DateTime endDate) async {
+      int end = endDate.millisecondsSinceEpoch;
+      int start = startDate.millisecondsSinceEpoch;
+      Map<String, int> interval = {'start': start, 'end': end};
+      var configs = await _channel.invokeMethod('queryConfiguration', interval);
+      return configs;
+    }
 }

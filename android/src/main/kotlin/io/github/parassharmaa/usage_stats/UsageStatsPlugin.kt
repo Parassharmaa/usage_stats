@@ -1,6 +1,7 @@
 package io.github.parassharmaa.usage_stats
 
 import android.content.Context
+import android.os.Build
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.BinaryMessenger
@@ -14,10 +15,6 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** UsageStatsPlugin */
 public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
 
     private var mContext: Context? = null
@@ -32,16 +29,6 @@ public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
         this.mContext = context
     }
 
-    // This static function is optional and equivalent to onAttachedToEngine. It supports the old
-    // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
-    // plugin registration via this function while apps migrate to use the new Android APIs
-    // post-flutter-1.12 via https://flutter.dev/go/android-project-migration.
-    //
-    // It is encouraged to share logic between onAttachedToEngine and registerWith to keep
-    // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
-    // depending on the user's project. onAttachedToEngine or registerWith must both be defined
-    // in the same class.
-
     companion object {
         @JvmStatic
         fun registerWith(registrar: Registrar) {
@@ -53,18 +40,51 @@ public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        if (call.method == "getPlatformVersion") {
-            result.success("Android ${android.os.Build.VERSION.RELEASE}")
-        } else if (call.method == "queryEvents") {
-            var start: Long = call.argument<Long>("start") as Long
-            var end: Long = call.argument<Long>("end") as Long
-            result.success(UsageEvents.queryEvents(mContext!!, start, end))
-        } else if (call.method == "isUsagePermission") {
-            result.success(Utils.isUsagePermission(mContext!!))
-        } else if (call.method == "grantUsagePermission") {
-            Utils.grantUsagePermission(mContext!!)
-        } else {
-            result.notImplemented()
+        when (call.method) {
+            "getPlatformVersion" -> {
+                result.success("Android ${android.os.Build.VERSION.RELEASE}")
+            }
+            "queryEvents" -> {
+                var start: Long = call.argument<Long>("start") as Long
+                var end: Long = call.argument<Long>("end") as Long
+                result.success(UsageStats.queryEvents(mContext!!, start, end))
+            }
+            "isUsagePermission" -> {
+                result.success(Utils.isUsagePermission(mContext!!))
+            }
+            "grantUsagePermission" -> {
+                Utils.grantUsagePermission(mContext!!)
+            }
+            "queryConfiguration" -> {
+                var start: Long = call.argument<Long>("start") as Long
+                var end: Long = call.argument<Long>("end") as Long
+                result.success(UsageStats.queryConfig(mContext!!, start, end))
+            }
+            "queryEventStats" -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    var start: Long = call.argument<Long>("start") as Long
+                    var end: Long = call.argument<Long>("end") as Long
+                    result.success(UsageStats.queryEventStats(mContext!!, start, end))
+                } else {
+                    result.error("API Error",
+                        "Requires API Level 28",
+                        "Target should be set to 28 to use this API"
+                    )
+                }
+            }
+            "queryAndAggregateUsageStats" -> {
+                var start: Long = call.argument<Long>("start") as Long
+                var end: Long = call.argument<Long>("end") as Long
+                result.success(UsageStats.queryAndAggregateUsageStats(mContext!!, start, end))
+            }
+            "queryUsageStats" -> {
+                var start: Long = call.argument<Long>("start") as Long
+                var end: Long = call.argument<Long>("end") as Long
+                result.success(UsageStats.queryUsageStats(mContext!!, start, end))
+            }
+            else -> {
+                result.notImplemented()
+            }
         }
     }
 

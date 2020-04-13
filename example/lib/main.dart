@@ -25,10 +25,11 @@ class _MyAppState extends State<MyApp> {
   Future<void> initUsage() async {
     DateTime endDate = new DateTime.now();
     DateTime startDate =
-        DateTime(endDate.year, endDate.month, endDate.day, 18, 30, 0);
-    print(startDate);
+        DateTime(endDate.year, endDate.month, endDate.day, 0, 30, 0);
     var queryEvents = await UsageStats.queryEvents(startDate, endDate);
-    print(queryEvents.toString());
+//    var queryConfigs = await UsageStats.queryConfiguration(startDate, endDate);
+    print(queryConfigs);
+
     this.setState(() {
       events = queryEvents;
     });
