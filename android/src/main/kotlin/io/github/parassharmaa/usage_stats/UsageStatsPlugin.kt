@@ -41,9 +41,6 @@ public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
-            "getPlatformVersion" -> {
-                result.success("Android ${android.os.Build.VERSION.RELEASE}")
-            }
             "queryEvents" -> {
                 var start: Long = call.argument<Long>("start") as Long
                 var end: Long = call.argument<Long>("end") as Long
