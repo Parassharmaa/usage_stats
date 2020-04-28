@@ -18,7 +18,7 @@ Add the following permission to the manifest namespace in `AndroidManifest.xml`:
 ```dart
 import 'package:usage_stats/usage_stats.dart';
 
-func init() async {
+getUsage() async {
 
     DateTime endDate = new DateTime.now();
     DateTime startDate = DateTime(endDate.year, endDate.month, endDate.day, 0, 0, 0);
@@ -30,23 +30,22 @@ func init() async {
     bool isPermission = UsageStats.checkUsagePermission();
     
     // query events
-    var events = await UsageStats.queryEvents(startDate, endDate);
+    List<EventUsageInfo> events = await UsageStats.queryEvents(startDate, endDate);
     
     // query usage stats
-    var usageStats = await UsageStats.queryUsageStats(startDate, endDate);
+    List<UsageInfo> usageStats = await UsageStats.queryUsageStats(startDate, endDate);
     
     // query eventStats API Level 28
-    var eventStats = await UsageStats.queryEventStats(startDate, endDate);
+    List<EventInfo> eventStats = await UsageStats.queryEventStats(startDate, endDate);
     
     // query configurations
-    var configurations = await UsageStats.queryConfiguration(startDate, endDate);
+    List<ConfigurationInfo> configurations = await UsageStats.queryConfiguration(startDate, endDate);
     
     // query aggregated Usage statistics
-    var queryAndAggregateUsageStats = await UsageStats.queryAndAggregateUsageStats(startDate, endDate);
+    Map<String, UsageInfo> queryAndAggregateUsageStats = await UsageStats.queryAndAggregateUsageStats(startDate, endDate);
 
 }
 ```
 
 ## To DO
-* Convert Map to Parameterized Objects
 * Add option to pass Interval Type in queryUsageStats, queryEventStats method

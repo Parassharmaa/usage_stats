@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:usage_stats/usage_stats.dart';
 
 void main() {
@@ -14,7 +12,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  List events = [];
+  List<EventUsageInfo> events;
 
   @override
   void initState() {
@@ -25,11 +23,12 @@ class _MyAppState extends State<MyApp> {
   Future<void> initUsage() async {
     UsageStats.grantUsagePermission();
     DateTime endDate = new DateTime.now();
-    DateTime startDate =
-        DateTime(endDate.year, endDate.month, endDate.day, 0, 30, 0);
-    var queryEvents = await UsageStats.queryEvents(startDate, endDate);
+    DateTime startDate = DateTime(endDate.year, endDate.month, 29, 0, 0, 0);
+    List<EventUsageInfo> queryEvents =
+        await UsageStats.queryEvents(startDate, endDate);
+
     this.setState(() {
-      events = queryEvents;
+      events = queryEvents.reversed.toList();
     });
   }
 
@@ -38,19 +37,29 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text("Usage Events"),
+          title: const Text("Usage Stats"),
         ),
-        body: ListView.builder(
-            itemCount: events.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(events[index]['packageName']),
-                subtitle: Text(DateTime.fromMillisecondsSinceEpoch(
-                        int.parse(events[index]['timeStamp']))
-                    .toString()),
-                trailing: Text(events[index]['eventType'].toString()),
-              );
-            }),
+        body: Container(
+            child: ListView.separated(
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(events[index].packageName),
+                    subtitle: Text(
+                        "Last time used: ${DateTime.fromMillisecondsSinceEpoch(int.parse(events[index].timeStamp)).toIso8601String()}"),
+                    trailing: Text(events[index].eventType),
+                  );
+                },
+                separatorBuilder: (context, index) => Divider(),
+                itemCount: events.length)),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            initUsage();
+          },
+          child: Icon(
+            Icons.refresh,
+          ),
+          mini: true,
+        ),
       ),
     );
   }
