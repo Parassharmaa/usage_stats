@@ -1,3 +1,8 @@
+## 0.1.0
+* Add return type
+* Add classes for UsageInfo, EventInfo, ConfigurationInfo, EventUsageInfo
+* Update example and ReadMe
+
 ## 0.0.2
 * Fix pubspec.yaml bug
 
