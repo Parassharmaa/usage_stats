@@ -1,11 +1,13 @@
 # usage_stats
+[![pub package](https://img.shields.io/pub/v/app_usage.svg)](https://pub.dartlang.org/packages/usage_stats)
+
 Query Android Usage Statistics (Configuration, Events, App Usage)
 
 ## Install
 Add ```usage_stats``` as a dependency in  `pubspec.yaml`.
 
 ## Android
-*NB: Requires API level 22 as a minimum!*
+*Requires API level 22 as a minimum!*
 
 Add the following permission to the manifest namespace in `AndroidManifest.xml`:
 ```xml
