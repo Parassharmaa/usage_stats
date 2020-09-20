@@ -12,7 +12,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  List<EventUsageInfo> events;
+  List<EventUsageInfo> events = [];
 
   @override
   void initState() {
