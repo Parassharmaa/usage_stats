@@ -4,13 +4,15 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.BinaryMessenger
-import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 /** UsageStatsPlugin */
@@ -78,6 +80,29 @@ public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
                 var start: Long = call.argument<Long>("start") as Long
                 var end: Long = call.argument<Long>("end") as Long
                 result.success(UsageStats.queryUsageStats(mContext!!, start, end))
+            }
+            "queryNetworkUsageStats" -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    var start: Long = call.argument<Long>("start") as Long
+                    var end: Long = call.argument<Long>("end") as Long
+                    GlobalScope.launch(Dispatchers.Main) {
+                        val netResult = withContext(Dispatchers.IO) {
+                            NetworkStats.queryNetworkUsageStats(
+                                context = mContext!!,
+                                startDate = start,
+                                endDate = end
+                            )
+                        }
+                        result.success(netResult)
+                    }
+                } else {
+                    result.error(
+                        "API Error",
+                        "Requires API Level 23",
+                        "Target should be set to 23 to use this API"
+                    )
+                }
+
             }
             else -> {
                 result.notImplemented()
