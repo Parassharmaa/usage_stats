@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'src/usage_info.dart';
 import 'src/event_info.dart';
 import 'src/configuration_info.dart';
@@ -6,6 +7,7 @@ import 'src/event_usage_info.dart';
 import 'package:flutter/services.dart';
 
 
+import 'src/network_info.dart';
 export 'src/usage_info.dart';
 export 'src/event_info.dart';
 export 'src/configuration_info.dart';
@@ -77,6 +79,17 @@ class UsageStats {
 //    usageAggStats.
     Map<String, UsageInfo> result = usageAggStats
         .map((key, value) => MapEntry(key as String, UsageInfo.fromMap(value)));
+    return result;
+  }
+
+  static Future<List<NetworkInfo>> queryNetworkUsageStats(
+      DateTime startDate, DateTime endDate) async {
+    int end = endDate.millisecondsSinceEpoch;
+    int start = startDate.millisecondsSinceEpoch;
+    Map<String, int> interval = {'start': start, 'end': end};
+    List events = await _channel.invokeMethod('queryNetworkUsageStats', interval);
+    List<NetworkInfo> result =
+        events.map((item) => NetworkInfo.fromMap(item)).toList();
     return result;
   }
 }
