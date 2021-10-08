@@ -43,11 +43,15 @@ getUsage() async {
     // query configurations
     List<ConfigurationInfo> configurations = await UsageStats.queryConfiguration(startDate, endDate);
     
-    // query aggregated Usage statistics
+    // query aggregated usage statistics
     Map<String, UsageInfo> queryAndAggregateUsageStats = await UsageStats.queryAndAggregateUsageStats(startDate, endDate);
+
+    // query network usage statistics
+    List<NetworkInfo> networkInfos = await UsageStats.queryNetworkUsageStats(startDate, endDate);
 
 }
 ```
 
 ## To DO
-* Add option to pass Interval Type in queryUsageStats, queryEventStats method
+- Add option to pass Interval Type in queryUsageStats, queryEventStats method
+- Add Unit Tests
