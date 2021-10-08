@@ -1,8 +1,8 @@
 # usage_stats
 [![pub package](https://img.shields.io/pub/v/usage_stats.svg)](https://pub.dartlang.org/packages/usage_stats)
-[![pub points](https://badges.bar/usage_stats/pub%20points)](https://pub.dev/packages/sentry/score)
-[![popularity](https://badges.bar/usage_stats/popularity)](https://pub.dev/packages/sentry/score)
-[![likes](https://badges.bar/usage_stats/likes)](https://pub.dev/packages/sentry/score)
+[![pub points](https://badges.bar/usage_stats/pub%20points)](https://pub.dev/packages/usage_stats/score)
+[![popularity](https://badges.bar/usage_stats/popularity)](https://pub.dev/packages/usage_stats/score)
+[![likes](https://badges.bar/usage_stats/likes)](https://pub.dev/packages/usage_stats/score)
 
 Query Android Usage Statistics (Configuration, Events, App Usage)
 
