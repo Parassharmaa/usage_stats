@@ -6,18 +6,18 @@ import 'src/configuration_info.dart';
 import 'src/event_usage_info.dart';
 import 'package:flutter/services.dart';
 
-
 import 'src/network_info.dart';
 export 'src/usage_info.dart';
 export 'src/event_info.dart';
+export 'src/network_info.dart';
 export 'src/configuration_info.dart';
 export 'src/event_usage_info.dart';
 
 class UsageStats {
   static const MethodChannel _channel = const MethodChannel('usage_stats');
 
-  static Future<bool> checkUsagePermission() async {
-    bool isPermission = await _channel.invokeMethod('isUsagePermission');
+  static Future<bool?> checkUsagePermission() async {
+    bool? isPermission = await _channel.invokeMethod('isUsagePermission');
     return isPermission;
   }
 
@@ -53,6 +53,7 @@ class UsageStats {
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
     List eventsStats = await _channel.invokeMethod('queryEventStats', interval);
+
     List<EventInfo> result =
         eventsStats.map((item) => EventInfo.fromMap(item)).toList();
     return result;
@@ -64,6 +65,7 @@ class UsageStats {
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
     List usageStats = await _channel.invokeMethod('queryUsageStats', interval);
+
     List<UsageInfo> result =
         usageStats.map((item) => UsageInfo.fromMap(item)).toList();
     return result;
@@ -76,7 +78,6 @@ class UsageStats {
     Map<String, int> interval = {'start': start, 'end': end};
     Map usageAggStats =
         await _channel.invokeMethod('queryAndAggregateUsageStats', interval);
-//    usageAggStats.
     Map<String, UsageInfo> result = usageAggStats
         .map((key, value) => MapEntry(key as String, UsageInfo.fromMap(value)));
     return result;
@@ -87,7 +88,8 @@ class UsageStats {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
-    List events = await _channel.invokeMethod('queryNetworkUsageStats', interval);
+    List events =
+        await _channel.invokeMethod('queryNetworkUsageStats', interval);
     List<NetworkInfo> result =
         events.map((item) => NetworkInfo.fromMap(item)).toList();
     return result;

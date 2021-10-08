@@ -1,3 +1,6 @@
+## 1.0.0
+* Null Safety Support
+
 ## 0.1.0
 * Add return type
 * Add classes for UsageInfo, EventInfo, ConfigurationInfo, EventUsageInfo
