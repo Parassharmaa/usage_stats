@@ -43,9 +43,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text("Usage Stats"),
-        ),
+        appBar: AppBar(title: const Text("Usage Stats"), actions: [
+          IconButton(
+            onPressed: UsageStats.grantUsagePermission,
+            icon: Icon(Icons.settings),
+          )
+        ]),
         body: Container(
           child: RefreshIndicator(
             onRefresh: initUsage,

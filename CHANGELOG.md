@@ -1,3 +1,7 @@
+## 1.1.0
+* While granting Usage Access Permission directly opens up App Screen
+
+
 ## 1.0.1
 * Update Readme
 

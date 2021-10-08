@@ -1,15 +1,12 @@
 package io.github.parassharmaa.usage_stats
 
-import android.Manifest
 import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Process
 import android.provider.Settings
 import android.util.Log
-import androidx.core.content.ContextCompat
-
 
 
 object Utils {
@@ -29,6 +26,7 @@ object Utils {
         if (!isUsagePermission(context)) {
             val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.data = Uri.parse("package:" + context.packageName);
             context.startActivity(intent)
         }
     }
