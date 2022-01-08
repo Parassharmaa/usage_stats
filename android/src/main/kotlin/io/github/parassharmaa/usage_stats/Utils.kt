@@ -24,10 +24,16 @@ object Utils {
 
     fun grantUsagePermission(context: Context) {
         if (!isUsagePermission(context)) {
-            val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            intent.data = Uri.parse("package:" + context.packageName);
-            context.startActivity(intent)
+            try {
+                val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                intent.data = Uri.parse("package:" + context.packageName);
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                context.startActivity(intent)
+            }
         }
     }
 }
