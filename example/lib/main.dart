@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> initUsage() async {
     UsageStats.grantUsagePermission();
     DateTime endDate = new DateTime.now();
-    DateTime startDate = endDate.subtract(Duration(days: 30));
+    DateTime startDate = endDate.subtract(Duration(days: 1));
 
     List<EventUsageInfo> queryEvents =
         await UsageStats.queryEvents(startDate, endDate);
@@ -32,6 +32,25 @@ class _MyAppState extends State<MyApp> {
         await UsageStats.queryNetworkUsageStats(startDate, endDate);
     Map<String?, NetworkInfo?> netInfoMap = Map.fromIterable(networkInfos,
         key: (v) => v.packageName, value: (v) => v);
+
+    List<UsageInfo> t = await UsageStats.queryUsageStats(startDate, endDate);
+
+    for (var i in t) {
+      if (double.parse(i.totalTimeInForeground!) > 0) {
+        print(DateTime.fromMillisecondsSinceEpoch(int.parse(i.firstTimeStamp!))
+            .toIso8601String());
+
+        print(DateTime.fromMillisecondsSinceEpoch(int.parse(i.lastTimeStamp!))
+            .toIso8601String());
+
+        print(i.packageName);
+        print(DateTime.fromMillisecondsSinceEpoch(int.parse(i.lastTimeUsed!))
+            .toIso8601String());
+        print(int.parse(i.totalTimeInForeground!) / 1000 / 60);
+
+        print('-----\n');
+      }
+    }
 
     this.setState(() {
       events = queryEvents.reversed.toList();
