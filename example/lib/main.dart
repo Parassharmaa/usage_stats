@@ -28,8 +28,11 @@ class _MyAppState extends State<MyApp> {
 
     List<EventUsageInfo> queryEvents =
         await UsageStats.queryEvents(startDate, endDate);
-    List<NetworkInfo> networkInfos =
-        await UsageStats.queryNetworkUsageStats(startDate, endDate);
+    List<NetworkInfo> networkInfos = await UsageStats.queryNetworkUsageStats(
+      startDate,
+      endDate,
+      networkType: NetworkType.all,
+    );
     Map<String?, NetworkInfo?> netInfoMap = Map.fromIterable(networkInfos,
         key: (v) => v.packageName, value: (v) => v);
 

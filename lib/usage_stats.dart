@@ -84,10 +84,17 @@ class UsageStats {
   }
 
   static Future<List<NetworkInfo>> queryNetworkUsageStats(
-      DateTime startDate, DateTime endDate) async {
+    DateTime startDate,
+    DateTime endDate, {
+    NetworkType networkType = NetworkType.all,
+  }) async {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
-    Map<String, int> interval = {'start': start, 'end': end};
+    Map<String, int> interval = {
+      'start': start,
+      'end': end,
+      'type': networkType.value,
+    };
     List events =
         await _channel.invokeMethod('queryNetworkUsageStats', interval);
     List<NetworkInfo> result =

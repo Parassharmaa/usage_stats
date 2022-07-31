@@ -4,7 +4,7 @@ import android.app.usage.NetworkStats
 import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
-import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.annotation.RequiresApi
 
@@ -14,8 +14,16 @@ object NetworkStats {
     fun queryNetworkUsageStats(
         context: Context,
         startDate: Long,
-        endDate: Long
+        endDate: Long,
+        type: Int
     ): List<Map<String, String>> {
+        val networkType: NetworkType = when (type) {
+            1 -> NetworkType.All
+            2 -> NetworkType.WiFi
+            3 -> NetworkType.Mobile
+            else -> NetworkType.All
+        }
+
         val networkStatsManager =
             context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
 
@@ -27,10 +35,11 @@ object NetworkStats {
             val totalAppSummary = appInfo.getNetworkSummary(
                 networkStatsManager = networkStatsManager,
                 startDate = startDate,
-                endDate = endDate
+                endDate = endDate,
+                networkType = networkType
             )
 
-            mapOf<String, String>(
+            mapOf(
                 "packageName" to appInfo.packageName,
                 "rxTotalBytes" to totalAppSummary.rxTotalBytes.toString(),
                 "txTotalBytes" to totalAppSummary.txTotalBytes.toString()
@@ -42,25 +51,60 @@ object NetworkStats {
     private fun ApplicationInfo.getNetworkSummary(
         networkStatsManager: NetworkStatsManager,
         startDate: Long,
-        endDate: Long
+        endDate: Long,
+        networkType: NetworkType,
     ): AppNetworkStats {
-        val wifiStats = this.getNetworkSummary(
-            networkType = ConnectivityManager.TYPE_WIFI,
-            networkStatsManager = networkStatsManager,
-            startDate = startDate,
-            endDate = endDate
-        )
+        val rxTotalBytes: Long
+        val txTotalBytes: Long
 
-        val mobileStats = this.getNetworkSummary(
-            networkType = ConnectivityManager.TYPE_MOBILE,
-            networkStatsManager = networkStatsManager,
-            startDate = startDate,
-            endDate = endDate
-        )
+        when (networkType) {
+            NetworkType.Mobile -> {
+                val mobileStats = this.getNetworkSummary(
+                    networkType = NetworkCapabilities.TRANSPORT_CELLULAR,
+                    networkStatsManager = networkStatsManager,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+
+                rxTotalBytes = mobileStats.rxTotalBytes
+                txTotalBytes = mobileStats.txTotalBytes
+            }
+
+            NetworkType.WiFi -> {
+                val wifiStats = this.getNetworkSummary(
+                    networkType = NetworkCapabilities.TRANSPORT_WIFI,
+                    networkStatsManager = networkStatsManager,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+
+                rxTotalBytes = wifiStats.rxTotalBytes
+                txTotalBytes = wifiStats.txTotalBytes
+            }
+
+            NetworkType.All -> {
+                val wifiStats = this.getNetworkSummary(
+                    networkType = NetworkCapabilities.TRANSPORT_WIFI,
+                    networkStatsManager = networkStatsManager,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+
+                val mobileStats = this.getNetworkSummary(
+                    networkType = NetworkCapabilities.TRANSPORT_CELLULAR,
+                    networkStatsManager = networkStatsManager,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+
+                rxTotalBytes = wifiStats.rxTotalBytes + mobileStats.rxTotalBytes
+                txTotalBytes = wifiStats.txTotalBytes + mobileStats.txTotalBytes
+            }
+        }
 
         return AppNetworkStats(
-            rxTotalBytes = wifiStats.rxTotalBytes + mobileStats.rxTotalBytes,
-            txTotalBytes = wifiStats.txTotalBytes + mobileStats.txTotalBytes
+            rxTotalBytes = rxTotalBytes,
+            txTotalBytes = txTotalBytes
         )
     }
 
@@ -96,4 +140,10 @@ object NetworkStats {
         val rxTotalBytes: Long,
         val txTotalBytes: Long
     )
+
+    private enum class NetworkType {
+        All,
+        WiFi,
+        Mobile,
+    }
 }

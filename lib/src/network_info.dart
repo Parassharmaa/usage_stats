@@ -16,3 +16,22 @@ class NetworkInfo {
   final String? rxTotalBytes;
   final String? txTotalBytes;
 }
+
+enum NetworkType {
+  all,
+  wifi,
+  mobile,
+}
+
+extension NetworkTypeExt on NetworkType {
+  int get value {
+    switch (this) {
+      case NetworkType.all:
+        return 1;
+      case NetworkType.wifi:
+        return 2;
+      case NetworkType.mobile:
+        return 3;
+    }
+  }
+}

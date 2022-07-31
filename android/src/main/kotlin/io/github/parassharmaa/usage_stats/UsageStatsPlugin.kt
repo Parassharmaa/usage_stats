@@ -83,14 +83,17 @@ public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
             }
             "queryNetworkUsageStats" -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    var start: Long = call.argument<Long>("start") as Long
-                    var end: Long = call.argument<Long>("end") as Long
+                    val start: Long = call.argument<Long>("start") as Long
+                    val end: Long = call.argument<Long>("end") as Long
+                    val type: Int = call.argument<Int>("type") as Int
+
                     GlobalScope.launch(Dispatchers.Main) {
                         val netResult = withContext(Dispatchers.IO) {
                             NetworkStats.queryNetworkUsageStats(
                                 context = mContext!!,
                                 startDate = start,
-                                endDate = end
+                                endDate = end,
+                                type = type
                             )
                         }
                         result.success(netResult)
@@ -114,4 +117,3 @@ public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
         channel.setMethodCallHandler(null)
     }
 }
-
