@@ -101,4 +101,23 @@ class UsageStats {
         events.map((item) => NetworkInfo.fromMap(item)).toList();
     return result;
   }
+
+  static Future<NetworkInfo> queryNetworkUsageStatsByPackage(
+    DateTime startDate,
+    DateTime endDate, {
+    required String packageName,
+    NetworkType networkType = NetworkType.all,
+  }) async {
+    int end = endDate.millisecondsSinceEpoch;
+    int start = startDate.millisecondsSinceEpoch;
+    Map<String, dynamic> interval = {
+      'start': start,
+      'end': end,
+      'type': networkType.value,
+      'packageName': packageName,
+    };
+    Map response = await _channel.invokeMethod(
+        'queryNetworkUsageStatsByPackage', interval);
+    return NetworkInfo.fromMap(response);
+  }
 }
