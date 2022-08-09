@@ -18,47 +18,55 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+
     initUsage();
   }
 
   Future<void> initUsage() async {
-    UsageStats.grantUsagePermission();
-    DateTime endDate = new DateTime.now();
-    DateTime startDate = endDate.subtract(Duration(days: 1));
+    try {
+      UsageStats.grantUsagePermission();
 
-    List<EventUsageInfo> queryEvents =
-        await UsageStats.queryEvents(startDate, endDate);
-    List<NetworkInfo> networkInfos = await UsageStats.queryNetworkUsageStats(
-      startDate,
-      endDate,
-      networkType: NetworkType.all,
-    );
-    Map<String?, NetworkInfo?> netInfoMap = Map.fromIterable(networkInfos,
-        key: (v) => v.packageName, value: (v) => v);
+      DateTime endDate = new DateTime.now();
+      DateTime startDate = endDate.subtract(Duration(days: 1));
 
-    List<UsageInfo> t = await UsageStats.queryUsageStats(startDate, endDate);
+      List<EventUsageInfo> queryEvents =
+          await UsageStats.queryEvents(startDate, endDate);
+      List<NetworkInfo> networkInfos = await UsageStats.queryNetworkUsageStats(
+        startDate,
+        endDate,
+        networkType: NetworkType.all,
+      );
 
-    for (var i in t) {
-      if (double.parse(i.totalTimeInForeground!) > 0) {
-        print(DateTime.fromMillisecondsSinceEpoch(int.parse(i.firstTimeStamp!))
-            .toIso8601String());
+      Map<String?, NetworkInfo?> netInfoMap = Map.fromIterable(networkInfos,
+          key: (v) => v.packageName, value: (v) => v);
 
-        print(DateTime.fromMillisecondsSinceEpoch(int.parse(i.lastTimeStamp!))
-            .toIso8601String());
+      List<UsageInfo> t = await UsageStats.queryUsageStats(startDate, endDate);
 
-        print(i.packageName);
-        print(DateTime.fromMillisecondsSinceEpoch(int.parse(i.lastTimeUsed!))
-            .toIso8601String());
-        print(int.parse(i.totalTimeInForeground!) / 1000 / 60);
+      for (var i in t) {
+        if (double.parse(i.totalTimeInForeground!) > 0) {
+          print(
+              DateTime.fromMillisecondsSinceEpoch(int.parse(i.firstTimeStamp!))
+                  .toIso8601String());
 
-        print('-----\n');
+          print(DateTime.fromMillisecondsSinceEpoch(int.parse(i.lastTimeStamp!))
+              .toIso8601String());
+
+          print(i.packageName);
+          print(DateTime.fromMillisecondsSinceEpoch(int.parse(i.lastTimeUsed!))
+              .toIso8601String());
+          print(int.parse(i.totalTimeInForeground!) / 1000 / 60);
+
+          print('-----\n');
+        }
       }
-    }
 
-    this.setState(() {
-      events = queryEvents.reversed.toList();
-      _netInfoMap = netInfoMap;
-    });
+      this.setState(() {
+        events = queryEvents.reversed.toList();
+        _netInfoMap = netInfoMap;
+      });
+    } catch (err) {
+      print(err);
+    }
   }
 
   @override

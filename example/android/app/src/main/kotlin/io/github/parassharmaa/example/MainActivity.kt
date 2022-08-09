@@ -1,4 +1,4 @@
-package io.github.parassharmaa.usage_stats_example
+package io.github.parassharmaa.example
 
 import io.flutter.embedding.android.FlutterActivity
 
