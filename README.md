@@ -50,7 +50,7 @@ getUsage() async {
     Map<String, UsageInfo> queryAndAggregateUsageStats = await UsageStats.queryAndAggregateUsageStats(startDate, endDate);
 
     // query network usage statistics
-    List<NetworkInfo> networkInfos = await UsageStats.queryNetworkUsageStats(startDate, endDate);
+    List<NetworkInfo> networkInfos = await UsageStats.queryNetworkUsageStats(startDate, endDate, networkType: NetworkType.all);
 
 }
 ```
