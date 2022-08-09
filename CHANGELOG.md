@@ -1,3 +1,8 @@
+## 1.2.0
+* Add Connection Type to query network
+* Query network usage based on package id
+
+
 ## 1.1.0
 * While granting Usage Access Permission directly opens up App Screen
 
