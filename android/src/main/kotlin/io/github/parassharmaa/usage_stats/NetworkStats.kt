@@ -184,6 +184,8 @@ object NetworkStats {
         } catch (err: Exception) {
 
             return AppNetworkStats(0, 0)
+        } finally {
+            queryDetailsForUid.close()
         }
 
     }
