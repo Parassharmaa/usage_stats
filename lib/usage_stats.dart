@@ -17,12 +17,27 @@ class UsageStats {
   static const MethodChannel _channel = const MethodChannel('usage_stats');
 
   static Future<bool?> checkUsagePermission() async {
-    bool? isPermission = await _channel.invokeMethod('isUsagePermission');
+    bool? isPermission;
+    try {
+      isPermission = await _channel.invokeMethod('isUsagePermission');
+      return isPermission;
+    } catch (e) {
+      print(e);
+    } finally {
+      // 关闭通道
+      _channel.setMethodCallHandler(null);
+    }
     return isPermission;
   }
 
   static Future<void> grantUsagePermission() async {
-    await _channel.invokeMethod('grantUsagePermission');
+    try {
+      await _channel.invokeMethod('grantUsagePermission');
+    } catch (e) {
+      print(e);
+    } finally {
+      _channel.setMethodCallHandler(null);
+    }
   }
 
   static Future<List<EventUsageInfo>> queryEvents(
@@ -30,9 +45,15 @@ class UsageStats {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
-    List events = await _channel.invokeMethod('queryEvents', interval);
-    List<EventUsageInfo> result =
-        events.map((item) => EventUsageInfo.fromMap(item)).toList();
+    List<EventUsageInfo> result = [];
+    try {
+      var events = await _channel.invokeMethod('queryEvents', interval);
+      result = events.map((item) => EventUsageInfo.fromMap(item)).toList();
+    } catch (e) {
+      print(e);
+    } finally {
+      _channel.setMethodCallHandler(null);
+    }
     return result;
   }
 
@@ -41,9 +62,16 @@ class UsageStats {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
-    List configs = await _channel.invokeMethod('queryConfiguration', interval);
-    List<ConfigurationInfo> result =
-        configs.map((item) => ConfigurationInfo.fromMap(item)).toList();
+    List<ConfigurationInfo> result = [];
+    try {
+      var configs = await _channel.invokeMethod('queryConfiguration', interval);
+      result = configs.map((item) => ConfigurationInfo.fromMap(item)).toList();
+    } catch (e) {
+      print(e);
+    } finally {
+      _channel.setMethodCallHandler(null);
+    }
+
     return result;
   }
 
@@ -52,10 +80,18 @@ class UsageStats {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
-    List eventsStats = await _channel.invokeMethod('queryEventStats', interval);
+    List<EventInfo> result = [];
+    try {
+      var eventsStats =
+          await _channel.invokeMethod('queryEventStats', interval);
 
-    List<EventInfo> result =
-        eventsStats.map((item) => EventInfo.fromMap(item)).toList();
+      result = eventsStats.map((item) => EventInfo.fromMap(item)).toList();
+    } catch (e) {
+      print(e);
+    } finally {
+      _channel.setMethodCallHandler(null);
+    }
+
     return result;
   }
 
@@ -64,10 +100,15 @@ class UsageStats {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
-    List usageStats = await _channel.invokeMethod('queryUsageStats', interval);
+    List<UsageInfo> result = [];
+    try {
+      var usageStats = await _channel.invokeMethod('queryUsageStats', interval);
 
-    List<UsageInfo> result =
-        usageStats.map((item) => UsageInfo.fromMap(item)).toList();
+      result = usageStats.map((item) => UsageInfo.fromMap(item)).toList();
+    } catch (e) {
+    } finally {
+      _channel.setMethodCallHandler(null);
+    }
     return result;
   }
 
@@ -76,10 +117,17 @@ class UsageStats {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
-    Map usageAggStats =
-        await _channel.invokeMethod('queryAndAggregateUsageStats', interval);
-    Map<String, UsageInfo> result = usageAggStats
-        .map((key, value) => MapEntry(key as String, UsageInfo.fromMap(value)));
+    Map<String, UsageInfo> result = {};
+    try {
+      var usageAggStats =
+          await _channel.invokeMethod('queryAndAggregateUsageStats', interval);
+      result = usageAggStats.map(
+          (key, value) => MapEntry(key as String, UsageInfo.fromMap(value)));
+    } catch (e) {
+      print(e);
+    } finally {
+      _channel.setMethodCallHandler(null);
+    }
     return result;
   }
 
@@ -95,10 +143,16 @@ class UsageStats {
       'end': end,
       'type': networkType.value,
     };
-    List events =
-        await _channel.invokeMethod('queryNetworkUsageStats', interval);
-    List<NetworkInfo> result =
-        events.map((item) => NetworkInfo.fromMap(item)).toList();
+    List<NetworkInfo> result = [];
+    try {
+      var events =
+          await _channel.invokeMethod('queryNetworkUsageStats', interval);
+      result = events.map((item) => NetworkInfo.fromMap(item)).toList();
+    } catch (e) {
+      print(e);
+    } finally {
+      _channel.setMethodCallHandler(null);
+    }
     return result;
   }
 
@@ -116,8 +170,15 @@ class UsageStats {
       'type': networkType.value,
       'packageName': packageName,
     };
-    Map response = await _channel.invokeMethod(
-        'queryNetworkUsageStatsByPackage', interval);
+    Map response = {};
+    try {
+      response = await _channel.invokeMethod(
+          'queryNetworkUsageStatsByPackage', interval);
+    } catch (e) {
+      print(e);
+    } finally {
+      _channel.setMethodCallHandler(null);
+    }
     return NetworkInfo.fromMap(response);
   }
 }
