@@ -47,7 +47,11 @@ class UsageStats {
     List<EventUsageInfo> result = [];
     try {
       var events = await _channel.invokeMethod('queryEvents', interval);
-      result = events.map((item) => EventUsageInfo.fromMap(item)).toList();
+      if (events is List<dynamic>) {
+        result = events.map((item) => EventUsageInfo.fromMap(item)).toList();
+      } else {
+        print('Received unexpected data type');
+      }
     } catch (e) {
       print(e);
     } finally {
@@ -64,7 +68,12 @@ class UsageStats {
     List<ConfigurationInfo> result = [];
     try {
       var configs = await _channel.invokeMethod('queryConfiguration', interval);
-      result = configs.map((item) => ConfigurationInfo.fromMap(item)).toList();
+      if (configs is List<dynamic>) {
+        result =
+            configs.map((item) => ConfigurationInfo.fromMap(item)).toList();
+      } else {
+        print('Received unexpected data type');
+      }
     } catch (e) {
       print(e);
     } finally {
@@ -83,8 +92,11 @@ class UsageStats {
     try {
       var eventsStats =
           await _channel.invokeMethod('queryEventStats', interval);
-
-      result = eventsStats.map((item) => EventInfo.fromMap(item)).toList();
+      if (eventsStats is List<dynamic>) {
+        result = eventsStats.map((item) => EventInfo.fromMap(item)).toList();
+      } else {
+        print('Received unexpected data type');
+      }
     } catch (e) {
       print(e);
     } finally {
@@ -102,8 +114,11 @@ class UsageStats {
     List<UsageInfo> result = [];
     try {
       var usageStats = await _channel.invokeMethod('queryUsageStats', interval);
-
-      result = usageStats.map((item) => UsageInfo.fromMap(item)).toList();
+      if (usageStats is List<dynamic>) {
+        result = usageStats.map((item) => UsageInfo.fromMap(item)).toList();
+      } else {
+        print('Received unexpected data type');
+      }
     } catch (e) {
     } finally {
       _channel.setMethodCallHandler(null);
@@ -120,8 +135,12 @@ class UsageStats {
     try {
       var usageAggStats =
           await _channel.invokeMethod('queryAndAggregateUsageStats', interval);
-      result = usageAggStats.map(
-          (key, value) => MapEntry(key as String, UsageInfo.fromMap(value)));
+      if (usageAggStats is Map) {
+        result = usageAggStats.map(
+            (key, value) => MapEntry(key as String, UsageInfo.fromMap(value)));
+      } else {
+        print('Received unexpected data type');
+      }
     } catch (e) {
       print(e);
     } finally {
@@ -146,7 +165,11 @@ class UsageStats {
     try {
       var events =
           await _channel.invokeMethod('queryNetworkUsageStats', interval);
-      result = events.map((item) => NetworkInfo.fromMap(item)).toList();
+      if (events is List<dynamic>) {
+        result = events.map((item) => NetworkInfo.fromMap(item)).toList();
+      } else {
+        print('Received unexpected data type');
+      }
     } catch (e) {
       print(e);
     } finally {
