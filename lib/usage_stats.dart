@@ -30,7 +30,7 @@ class UsageStats {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
-    List events = await _channel.invokeMethod('queryEvents', interval);
+    List<dynamic> events = await _channel.invokeMethod('queryEvents', interval);
     List<EventUsageInfo> result =
         events.map((item) => EventUsageInfo.fromMap(item)).toList();
     return result;
@@ -41,7 +41,8 @@ class UsageStats {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
-    List configs = await _channel.invokeMethod('queryConfiguration', interval);
+    List<dynamic> configs =
+        await _channel.invokeMethod('queryConfiguration', interval);
     List<ConfigurationInfo> result =
         configs.map((item) => ConfigurationInfo.fromMap(item)).toList();
     return result;
@@ -52,7 +53,8 @@ class UsageStats {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
-    List eventsStats = await _channel.invokeMethod('queryEventStats', interval);
+    List<dynamic> eventsStats =
+        await _channel.invokeMethod('queryEventStats', interval);
 
     List<EventInfo> result =
         eventsStats.map((item) => EventInfo.fromMap(item)).toList();
@@ -64,7 +66,8 @@ class UsageStats {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
-    List usageStats = await _channel.invokeMethod('queryUsageStats', interval);
+    List<dynamic> usageStats =
+        await _channel.invokeMethod('queryUsageStats', interval);
 
     List<UsageInfo> result =
         usageStats.map((item) => UsageInfo.fromMap(item)).toList();
@@ -76,10 +79,16 @@ class UsageStats {
     int end = endDate.millisecondsSinceEpoch;
     int start = startDate.millisecondsSinceEpoch;
     Map<String, int> interval = {'start': start, 'end': end};
-    Map usageAggStats =
+    Map<dynamic, dynamic> usageAggStats =
         await _channel.invokeMethod('queryAndAggregateUsageStats', interval);
-    Map<String, UsageInfo> result = usageAggStats
-        .map((key, value) => MapEntry(key as String, UsageInfo.fromMap(value)));
+    Map<String, UsageInfo> result = {};
+
+    usageAggStats.forEach((key, value) {
+      if (key is String && value is Map<String, dynamic>) {
+        result[key] = UsageInfo.fromMap(value);
+      }
+    });
+
     return result;
   }
 
@@ -95,7 +104,7 @@ class UsageStats {
       'end': end,
       'type': networkType.value,
     };
-    List events =
+    List<dynamic> events =
         await _channel.invokeMethod('queryNetworkUsageStats', interval);
     List<NetworkInfo> result =
         events.map((item) => NetworkInfo.fromMap(item)).toList();
