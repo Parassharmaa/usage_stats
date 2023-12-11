@@ -171,9 +171,11 @@ packages:
   usage_stats:
     dependency: "direct main"
     description:
-      path: ".."
-      relative: true
-    source: path
+      path: "."
+      ref: master
+      resolved-ref: fa0e5717d20ee6757badcea64144ddd53e14a8c2
+      url: "https://github.com/bakboem/usage_stats.git"
+    source: git
     version: "1.2.0"
   vector_math:
     dependency: transitive
