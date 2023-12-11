@@ -35,7 +35,7 @@ public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
         @JvmStatic
         fun registerWith(registrar: Registrar) {
             val channel = MethodChannel(registrar.messenger(), "usage_stats")
-            var plugin = UsageStatsPlugin()
+            val plugin = UsageStatsPlugin()
             plugin.setContext(registrar.context())
             channel.setMethodCallHandler(plugin)
         }
@@ -44,8 +44,8 @@ public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             "queryEvents" -> {
-                var start: Long = call.argument<Long>("start") as Long
-                var end: Long = call.argument<Long>("end") as Long
+                val start: Long = call.argument<Long>("start") as Long
+                val end: Long = call.argument<Long>("end") as Long
                 result.success(UsageStats.queryEvents(mContext!!, start, end))
             }
             "isUsagePermission" -> {
@@ -55,14 +55,14 @@ public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
                 Utils.grantUsagePermission(mContext!!)
             }
             "queryConfiguration" -> {
-                var start: Long = call.argument<Long>("start") as Long
-                var end: Long = call.argument<Long>("end") as Long
+                val start: Long = call.argument<Long>("start") as Long
+                val end: Long = call.argument<Long>("end") as Long
                 result.success(UsageStats.queryConfig(mContext!!, start, end))
             }
             "queryEventStats" -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    var start: Long = call.argument<Long>("start") as Long
-                    var end: Long = call.argument<Long>("end") as Long
+                    val start: Long = call.argument<Long>("start") as Long
+                    val end: Long = call.argument<Long>("end") as Long
                     result.success(UsageStats.queryEventStats(mContext!!, start, end))
                 } else {
                     result.error("API Error",
@@ -72,13 +72,13 @@ public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
                 }
             }
             "queryAndAggregateUsageStats" -> {
-                var start: Long = call.argument<Long>("start") as Long
-                var end: Long = call.argument<Long>("end") as Long
+                val start: Long = call.argument<Long>("start") as Long
+                val end: Long = call.argument<Long>("end") as Long
                 result.success(UsageStats.queryAndAggregateUsageStats(mContext!!, start, end))
             }
             "queryUsageStats" -> {
-                var start: Long = call.argument<Long>("start") as Long
-                var end: Long = call.argument<Long>("end") as Long
+                val start: Long = call.argument<Long>("start") as Long
+                val end: Long = call.argument<Long>("end") as Long
                 result.success(UsageStats.queryUsageStats(mContext!!, start, end))
             }
             "queryNetworkUsageStats" -> {
