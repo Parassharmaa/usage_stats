@@ -167,8 +167,9 @@ object NetworkStats {
         endDate: Long,
         subscriberID: String? = null,
     ): AppNetworkStats {
+        var queryDetailsForUid: NetworkStats? = null
         try {
-            val queryDetailsForUid: NetworkStats = networkStatsManager.queryDetailsForUid(
+            queryDetailsForUid = networkStatsManager.queryDetailsForUid(
                 networkType, subscriberID, startDate, endDate, uid
             )
 
@@ -184,6 +185,8 @@ object NetworkStats {
         } catch (err: Exception) {
 
             return AppNetworkStats(0, 0)
+        } finally {
+            queryDetailsForUid.close()
         }
 
     }
