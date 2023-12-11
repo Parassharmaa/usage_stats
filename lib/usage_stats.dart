@@ -24,7 +24,6 @@ class UsageStats {
     } catch (e) {
       print(e);
     } finally {
-      // 关闭通道
       _channel.setMethodCallHandler(null);
     }
     return isPermission;
