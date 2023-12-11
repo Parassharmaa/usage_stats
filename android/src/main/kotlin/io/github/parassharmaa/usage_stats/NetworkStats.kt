@@ -172,22 +172,24 @@ object NetworkStats {
             queryDetailsForUid = networkStatsManager.queryDetailsForUid(
                 networkType, subscriberID, startDate, endDate, uid
             )
-
-            val tmpBucket = NetworkStats.Bucket()
-            var rxTotal = 0L
-            var txTotal = 0L
-            while (queryDetailsForUid.hasNextBucket()) {
-                queryDetailsForUid.getNextBucket(tmpBucket)
-                txTotal += tmpBucket.txBytes
-                rxTotal += tmpBucket.rxBytes
-            }
-            return AppNetworkStats(rxTotal, txTotal)
+        
+            queryDetailsForUid?.let { stats ->
+                val tmpBucket = NetworkStats.Bucket()
+                var rxTotal = 0L
+                var txTotal = 0L
+                while (stats.hasNextBucket()) {
+                    stats.getNextBucket(tmpBucket)
+                    txTotal += tmpBucket.txBytes
+                    rxTotal += tmpBucket.rxBytes
+                }
+                return AppNetworkStats(rxTotal, txTotal)
+            } ?: return AppNetworkStats(0, 0) 
         } catch (err: Exception) {
-
             return AppNetworkStats(0, 0)
         } finally {
-            queryDetailsForUid.close()
+            queryDetailsForUid?.close()
         }
+        
 
     }
 
