@@ -1,3 +1,6 @@
+## 1.2.1
+* add namespace to android gradle
+
 ## 1.2.0
 * Add Connection Type to query network
 * Query network usage based on package id

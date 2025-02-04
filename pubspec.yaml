@@ -1,10 +1,10 @@
 name: usage_stats
 description: Query Android Usage Statistics (Configurations, Events, Usage)
-version: 1.2.0
+version: 1.2.1
 homepage: https://github.com/Parassharmaa/usage_stats
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.10.0"
 
 dependencies:
@@ -16,8 +16,8 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
-    plugin:
-      platforms:
-        android:
-          package: io.github.parassharmaa.usage_stats
-          pluginClass : UsageStatsPlugin
+  plugin:
+    platforms:
+      android:
+        package: io.github.parassharmaa.usage_stats
+        pluginClass: UsageStatsPlugin
