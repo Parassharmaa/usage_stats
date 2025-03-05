@@ -1,3 +1,6 @@
+## 1.3.0
+* Make compatibale with latest versions of android
+
 ## 1.2.1
 * add namespace to android gradle
 
