@@ -8,7 +8,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -22,23 +21,13 @@ public class UsageStatsPlugin : FlutterPlugin, MethodCallHandler {
     private var mContext: Context? = null
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "usage_stats")
-        channel.setMethodCallHandler(this);
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "usage_stats")
+        channel.setMethodCallHandler(this)
         setContext(flutterPluginBinding.applicationContext)
     }
 
     private fun setContext(context: Context) {
         this.mContext = context
-    }
-
-    companion object {
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val channel = MethodChannel(registrar.messenger(), "usage_stats")
-            var plugin = UsageStatsPlugin()
-            plugin.setContext(registrar.context())
-            channel.setMethodCallHandler(plugin)
-        }
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
