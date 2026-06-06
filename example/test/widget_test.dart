@@ -1,27 +1,38 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Smoke test for the usage_stats example app. The plugin's platform channel is
+// mocked so the widget tree builds without a real Android device.
 
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:usage_stats_example/main.dart';
 
 void main() {
-  testWidgets('Verify Platform version', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+  const channel = MethodChannel('usage_stats');
 
-    // Verify that platform version is retrieved.
-    expect(
-      find.byWidgetPredicate(
-        (Widget widget) => widget is Text &&
-                           widget.data!.startsWith('Running on:'),
-      ),
-      findsOneWidget,
-    );
+  setUp(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      switch (call.method) {
+        case 'isUsagePermission':
+          return false;
+        case 'getAppStandbyBucket':
+          return null;
+        default:
+          return <dynamic>[];
+      }
+    });
+  });
+
+  tearDown(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, null);
+  });
+
+  testWidgets('renders the tabbed showcase', (tester) async {
+    await tester.pumpWidget(const UsageStatsDemoApp());
+    await tester.pump();
+
+    expect(find.text('usage_stats'), findsOneWidget);
+    expect(find.text('Usage'), findsOneWidget);
+    expect(find.text('Apps'), findsOneWidget);
   });
 }

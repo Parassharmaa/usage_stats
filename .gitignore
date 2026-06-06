@@ -1,9 +1,45 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
 .DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
 .dart_tool/
-
+.flutter-plugins
+.flutter-plugins-dependencies
 .packages
+.pub-cache/
 .pub/
-
 build/
+**/Flutter/ephemeral/
+**/Flutter/flutter_export_environment.sh
 
-*.lock
+# The package itself should not commit a lockfile; the example app may.
+/pubspec.lock
+
+# Android related
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/key.properties
+*.jks

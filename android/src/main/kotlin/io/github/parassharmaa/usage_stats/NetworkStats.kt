@@ -1,7 +1,6 @@
 package io.github.parassharmaa.usage_stats
 
 import android.annotation.SuppressLint
-import android.app.usage.NetworkStats
 import android.app.usage.NetworkStatsManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
@@ -9,49 +8,41 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.telephony.TelephonyManager
 import androidx.annotation.RequiresApi
-
+import android.app.usage.NetworkStats as AndroidNetworkStats
 
 object NetworkStats {
-
     @RequiresApi(Build.VERSION_CODES.M)
     fun queryNetworkUsageStats(
         context: Context,
         startDate: Long,
         endDate: Long,
-        type: Int
+        type: Int,
     ): List<Map<String, String>> {
-        val networkType: NetworkType = when (type) {
-            1 -> NetworkType.All
-            2 -> NetworkType.WiFi
-            3 -> NetworkType.Mobile
-            else -> NetworkType.All
-        }
-
+        val networkType = networkTypeFromInt(type)
         val networkStatsManager =
             context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
-        val subscriberID = getSubscriberId(context)
+        val subscriberId = getSubscriberId(context)
 
-        val installedApplications: MutableList<ApplicationInfo> =
+        @Suppress("DEPRECATION")
+        val installedApplications: List<ApplicationInfo> =
             context.packageManager.getInstalledApplications(0)
 
-        return installedApplications.map { appInfo: ApplicationInfo ->
-
-            val totalAppSummary = appInfo.getNetworkSummary(
-                networkStatsManager = networkStatsManager,
-                startDate = startDate,
-                endDate = endDate,
-                networkType = networkType,
-                subscriberID = subscriberID,
-            )
-
+        return installedApplications.map { appInfo ->
+            val summary =
+                appInfo.getNetworkSummary(
+                    networkStatsManager = networkStatsManager,
+                    startDate = startDate,
+                    endDate = endDate,
+                    networkType = networkType,
+                    subscriberId = subscriberId,
+                )
             mapOf(
                 "packageName" to appInfo.packageName,
-                "rxTotalBytes" to totalAppSummary.rxTotalBytes.toString(),
-                "txTotalBytes" to totalAppSummary.txTotalBytes.toString()
+                "rxTotalBytes" to summary.rxTotalBytes.toString(),
+                "txTotalBytes" to summary.txTotalBytes.toString(),
             )
         }
     }
-
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun queryNetworkUsageStatsByPackage(
@@ -59,37 +50,36 @@ object NetworkStats {
         startDate: Long,
         endDate: Long,
         type: Int,
-        packageName: String
+        packageName: String,
     ): Map<String, String> {
-        val networkType: NetworkType = when (type) {
-            1 -> NetworkType.All
+        val networkType = networkTypeFromInt(type)
+        val networkStatsManager =
+            context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
+        val subscriberId = getSubscriberId(context)
+        val appInfo = context.packageManager.getApplicationInfo(packageName, 0)
+
+        val summary =
+            appInfo.getNetworkSummary(
+                networkStatsManager = networkStatsManager,
+                startDate = startDate,
+                endDate = endDate,
+                networkType = networkType,
+                subscriberId = subscriberId,
+            )
+
+        return mapOf(
+            "packageName" to appInfo.packageName,
+            "rxTotalBytes" to summary.rxTotalBytes.toString(),
+            "txTotalBytes" to summary.txTotalBytes.toString(),
+        )
+    }
+
+    private fun networkTypeFromInt(type: Int): NetworkType =
+        when (type) {
             2 -> NetworkType.WiFi
             3 -> NetworkType.Mobile
             else -> NetworkType.All
         }
-
-        val networkStatsManager =
-            context.getSystemService(Context.NETWORK_STATS_SERVICE) as NetworkStatsManager
-        val subscriberID = getSubscriberId(context)
-
-        val appInfo = context.packageManager.getApplicationInfo(packageName, 0)
-
-
-        val totalAppSummary = appInfo.getNetworkSummary(
-            networkStatsManager = networkStatsManager,
-            startDate = startDate,
-            endDate = endDate,
-            networkType = networkType,
-            subscriberID = subscriberID,
-        )
-
-        return mapOf(
-            "packageName" to appInfo.packageName,
-            "rxTotalBytes" to totalAppSummary.rxTotalBytes.toString(),
-            "txTotalBytes" to totalAppSummary.txTotalBytes.toString()
-        )
-    }
-
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun ApplicationInfo.getNetworkSummary(
@@ -97,121 +87,87 @@ object NetworkStats {
         startDate: Long,
         endDate: Long,
         networkType: NetworkType,
-        subscriberID: String? = null,
+        subscriberId: String? = null,
     ): AppNetworkStats {
-        val rxTotalBytes: Long
-        val txTotalBytes: Long
-
-        when (networkType) {
-            NetworkType.Mobile -> {
-
-
-                val mobileStats = this.getNetworkSummary(
-                    networkType = NetworkCapabilities.TRANSPORT_CELLULAR,
-                    networkStatsManager = networkStatsManager,
-                    startDate = startDate,
-                    endDate = endDate,
-                    subscriberID = subscriberID,
+        val wifi =
+            if (networkType != NetworkType.Mobile) {
+                getNetworkSummary(
+                    NetworkCapabilities.TRANSPORT_WIFI,
+                    networkStatsManager,
+                    startDate,
+                    endDate,
                 )
-
-                rxTotalBytes = mobileStats.rxTotalBytes
-                txTotalBytes = mobileStats.txTotalBytes
+            } else {
+                AppNetworkStats(0, 0)
             }
-
-            NetworkType.WiFi -> {
-                val wifiStats = this.getNetworkSummary(
-                    networkType = NetworkCapabilities.TRANSPORT_WIFI,
-                    networkStatsManager = networkStatsManager,
-                    startDate = startDate,
-                    endDate = endDate,
+        val mobile =
+            if (networkType != NetworkType.WiFi) {
+                getNetworkSummary(
+                    NetworkCapabilities.TRANSPORT_CELLULAR,
+                    networkStatsManager,
+                    startDate,
+                    endDate,
+                    subscriberId,
                 )
-
-                rxTotalBytes = wifiStats.rxTotalBytes
-                txTotalBytes = wifiStats.txTotalBytes
+            } else {
+                AppNetworkStats(0, 0)
             }
-
-            NetworkType.All -> {
-                val wifiStats = this.getNetworkSummary(
-                    networkType = NetworkCapabilities.TRANSPORT_WIFI,
-                    networkStatsManager = networkStatsManager,
-                    startDate = startDate,
-                    endDate = endDate,
-                )
-
-                val mobileStats = this.getNetworkSummary(
-                    networkType = NetworkCapabilities.TRANSPORT_CELLULAR,
-                    networkStatsManager = networkStatsManager,
-                    startDate = startDate,
-                    endDate = endDate,
-                    subscriberID = subscriberID,
-                )
-
-                rxTotalBytes = wifiStats.rxTotalBytes + mobileStats.rxTotalBytes
-                txTotalBytes = wifiStats.txTotalBytes + mobileStats.txTotalBytes
-            }
-        }
-
         return AppNetworkStats(
-            rxTotalBytes = rxTotalBytes,
-            txTotalBytes = txTotalBytes
+            rxTotalBytes = wifi.rxTotalBytes + mobile.rxTotalBytes,
+            txTotalBytes = wifi.txTotalBytes + mobile.txTotalBytes,
         )
     }
-
 
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.M)
     private fun ApplicationInfo.getNetworkSummary(
-        networkType: Int,
+        transport: Int,
         networkStatsManager: NetworkStatsManager,
         startDate: Long,
         endDate: Long,
-        subscriberID: String? = null,
-    ): AppNetworkStats {
+        subscriberId: String? = null,
+    ): AppNetworkStats =
         try {
-            val queryDetailsForUid: NetworkStats = networkStatsManager.queryDetailsForUid(
-                networkType, subscriberID, startDate, endDate, uid
-            )
-
-            val tmpBucket = NetworkStats.Bucket()
+            val details: AndroidNetworkStats =
+                networkStatsManager.queryDetailsForUid(
+                    transport,
+                    subscriberId,
+                    startDate,
+                    endDate,
+                    uid,
+                )
+            val bucket = AndroidNetworkStats.Bucket()
             var rxTotal = 0L
             var txTotal = 0L
-            while (queryDetailsForUid.hasNextBucket()) {
-                queryDetailsForUid.getNextBucket(tmpBucket)
-                txTotal += tmpBucket.txBytes
-                rxTotal += tmpBucket.rxBytes
+            while (details.hasNextBucket()) {
+                details.getNextBucket(bucket)
+                txTotal += bucket.txBytes
+                rxTotal += bucket.rxBytes
             }
-            return AppNetworkStats(rxTotal, txTotal)
-        } catch (err: Exception) {
-
-            return AppNetworkStats(0, 0)
+            AppNetworkStats(rxTotal, txTotal)
+        } catch (e: Exception) {
+            AppNetworkStats(0, 0)
         }
-
-    }
 
     @SuppressLint("MissingPermission", "HardwareIds")
-    private fun getSubscriberId(
-        context: Context,
-    ): String? {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                return null
-
-            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
-            return telephonyManager?.subscriberId
-        } catch (_: Exception) {
+    private fun getSubscriberId(context: Context): String? {
+        // From Android 10 (API 29) reading the subscriber id is restricted and is
+        // no longer required by queryDetailsForUid, so pass null.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) return null
+        return try {
+            val telephonyManager =
+                context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
+            @Suppress("DEPRECATION")
+            telephonyManager?.subscriberId
+        } catch (e: Exception) {
+            null
         }
-
-        return "";
     }
 
     private data class AppNetworkStats(
         val rxTotalBytes: Long,
-        val txTotalBytes: Long
+        val txTotalBytes: Long,
     )
 
-    private enum class NetworkType {
-        All,
-        WiFi,
-        Mobile,
-    }
+    private enum class NetworkType { All, WiFi, Mobile }
 }

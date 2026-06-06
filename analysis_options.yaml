@@ -1,0 +1,14 @@
+# Static analysis configuration for the usage_stats package.
+# See https://dart.dev/tools/analysis for details.
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Enforce dartdoc on every public API member.
+    - public_member_api_docs
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_final_locals
+    - unawaited_futures
+    - directives_ordering
+    - avoid_redundant_argument_values

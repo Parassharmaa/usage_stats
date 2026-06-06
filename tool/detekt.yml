@@ -1,0 +1,46 @@
+# Strict detekt overrides, layered on top of detekt's default rule set
+# (run with --build-upon-default-config). Any finding fails the run.
+build:
+  maxIssues: 0
+
+complexity:
+  LongMethod:
+    threshold: 80
+  LongParameterList:
+    functionThreshold: 8
+    constructorThreshold: 9
+  TooManyFunctions:
+    thresholdInClasses: 20
+    thresholdInObjects: 25
+    thresholdInFiles: 25
+  CyclomaticComplexMethod:
+    threshold: 20
+
+style:
+  # Event-type, interval and transport values are inherently numeric constants.
+  MagicNumber:
+    active: false
+  ReturnCount:
+    max: 5
+  MaxLineLength:
+    maxLineLength: 120
+  UnnecessaryAbstractClass:
+    active: true
+
+exceptions:
+  # Several queries intentionally catch broad exceptions to degrade gracefully
+  # (returning null/empty) instead of crashing the host app.
+  TooGenericExceptionCaught:
+    active: false
+  SwallowedException:
+    active: false
+
+naming:
+  # The Android package name io.github.parassharmaa.usage_stats contains an
+  # underscore, which is valid for Android but not for detekt's default pattern.
+  PackageNaming:
+    active: false
+  FunctionNaming:
+    active: true
+  ClassNaming:
+    active: true

@@ -1,0 +1,11 @@
+root = true
+
+[*.{kt,kts}]
+ktlint_code_style = ktlint_official
+max_line_length = 120
+indent_size = 4
+insert_final_newline = true
+# The published Android package name (io.github.parassharmaa.usage_stats) and the
+# example application id contain an underscore, which is valid for Android but
+# trips ktlint's package-name rule.
+ktlint_standard_package-name = disabled
