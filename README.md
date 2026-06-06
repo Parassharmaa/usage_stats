@@ -18,10 +18,10 @@ The plugin wraps Android's `UsageStatsManager`, `NetworkStatsManager`,
 The bundled example app showcases every API:
 
 <p align="center">
-  <img src="doc/screenshots/usage.png" width="180" alt="Per-app foreground usage" />
-  <img src="doc/screenshots/events.png" width="180" alt="Usage events with readable types" />
-  <img src="doc/screenshots/storage.png" width="180" alt="Per-app storage and metadata" />
-  <img src="doc/screenshots/self.png" width="180" alt="App standby bucket and self events" />
+  <img src="https://raw.githubusercontent.com/Parassharmaa/usage_stats/master/doc/screenshots/usage.png" width="180" alt="Per-app foreground usage" />
+  <img src="https://raw.githubusercontent.com/Parassharmaa/usage_stats/master/doc/screenshots/events.png" width="180" alt="Usage events with readable types" />
+  <img src="https://raw.githubusercontent.com/Parassharmaa/usage_stats/master/doc/screenshots/storage.png" width="180" alt="Per-app storage and metadata" />
+  <img src="https://raw.githubusercontent.com/Parassharmaa/usage_stats/master/doc/screenshots/self.png" width="180" alt="App standby bucket and self events" />
 </p>
 
 ## Install

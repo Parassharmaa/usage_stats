@@ -1,3 +1,8 @@
+## 2.0.1
+
+* Use absolute screenshot URLs in the README so they render on pub.dev
+  (pub.dev does not resolve relative image paths).
+
 ## 2.0.0
 
 The Dart API is fully backwards compatible (every change below is additive), but

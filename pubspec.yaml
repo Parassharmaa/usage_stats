@@ -2,7 +2,7 @@ name: usage_stats
 description: >-
   Query Android usage statistics: app usage, events, configuration changes,
   app standby buckets, storage usage and per-app network data.
-version: 2.0.0
+version: 2.0.1
 homepage: https://github.com/Parassharmaa/usage_stats
 repository: https://github.com/Parassharmaa/usage_stats
 issue_tracker: https://github.com/Parassharmaa/usage_stats/issues
